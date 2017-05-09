@@ -1,0 +1,5 @@
+%This script Loads
+%Load all data
+OpenBags;
+filter;
+Mapping_data_fusing
