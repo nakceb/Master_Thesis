@@ -38,9 +38,9 @@ R_diff = [];
 [theta,theta_dot]=KF_SVA(theta_gps,theta_odom,theta_dot,dt,0);
 [x,y]=KF_XY(z_gps_1,z_gps_2,R,dt,0);
 %[x,y]=KF_XY_velo(z_gps_1,z_gps_2,R,dt,0);
-init_map(30,30,40);
+init_map(20,15,40);
 disp('Greatings! This will take some time. It is suggested to go and get some coffie at this time. Approximatly 20 minutes on a crappy computer.')
-
+figure
 while (isMoreData())
     string = NextData();
     if strcmp(string, 'GPS')
@@ -69,13 +69,13 @@ while (isMoreData())
             R=-R;
         end
         
-        WHeel_R = sqrt((Odom_pos_X(WHEELCOUNTER+5)-Odom_pos_X(WHEELCOUNTER-5))^2+(Odom_pos_Y(WHEELCOUNTER+5)-Odom_pos_Y(WHEELCOUNTER-5))^2);
-        length_gps = size(GPS_TimeStamp);
-        if GPSCOUNTER+5<length_gps(2)
-            GPS_R = sqrt((GPS_X(GPSCOUNTER+5) - GPS_X(GPSCOUNTER-5))^2 + (GPS_Y(GPSCOUNTER+5) - GPS_Y(GPSCOUNTER-5))^2); 
-        end
-%          disp(R_dot - 0.2 * abs(R)/delta_time)
-        R_diff = [R_diff, GPS_R-WHeel_R];
+%         WHeel_R = sqrt((Odom_pos_X(WHEELCOUNTER+5)-Odom_pos_X(WHEELCOUNTER-5))^2+(Odom_pos_Y(WHEELCOUNTER+5)-Odom_pos_Y(WHEELCOUNTER-5))^2);
+%         length_gps = size(GPS_TimeStamp);
+%         if GPSCOUNTER+5<length_gps(2)
+%             GPS_R = sqrt((GPS_X(GPSCOUNTER+5) - GPS_X(GPSCOUNTER-5))^2 + (GPS_Y(GPSCOUNTER+5) - GPS_Y(GPSCOUNTER-5))^2); 
+%         end
+% %          disp(R_dot - 0.2 * abs(R)/delta_time)
+%         R_diff = [R_diff, GPS_R-WHeel_R];
 %         if all_fix(500)%GPS_R < 0.5 * abs(WHeel_R) && all_fix(1000)
 %             [theta,theta_dot]=KF_SVA(theta_gps,theta_odom,Theta_imu_dot,dt,1);
 %             [x,y]=KF_XY(z_gps_1,z_gps_2,R,delta_time,1);
@@ -97,41 +97,32 @@ while (isMoreData())
         WHEELCOUNTER = WHEELCOUNTER + 1;
     end
     
-    
-%     if Loop_Front_center(WHEELCOUNTER-1) < 0 && Loop_Front_center(WHEELCOUNTER) > 0%|| Loop_Front_center_F(WHEELCOUNTER) < 0 || Loop_Front_center_N(WHEELCOUNTER) < 0       
-%         if oposite_rotation_direction()
-%             if cell_flag_hit(x,y) == 1
-% %             Occupy_cells(x+15,y+5,(THETA(end)*180/pi)+45);
-%                Occupy_cells_left(x+20,y+15,(THETA(end)*180/pi)-90);
-% %                 disp(WHEELCOUNTER)
-%             end
-%         else
-%             if cell_flag_hit(x,y) == 1
-%              Occupy_cells_right(x+20,y+15,(THETA(end)*180/pi)-90);
-%             
-%             end
+    if Loop_Front_center(WHEELCOUNTER-1) < 0 && Loop_Front_center(WHEELCOUNTER) > 0%|| Loop_Front_center_F(WHEELCOUNTER) < 0 || Loop_Front_center_N(WHEELCOUNTER) < 0       
+        if oposite_rotation_direction()
+            if cell_flag_hit(x,y) == 1
+%              Occupy_cells(x+15,y+5,(THETA(end)*180/pi)+45);
+               Occupy_cells_left(x+15,y+5,(THETA(end)*180/pi)-90);
+            end
+        else
+            if cell_flag_hit(x,y) == 1
+             Occupy_cells_right(x+15,y+5,(THETA(end)*180/pi)-90);
+            show(map)
+            drawnow;
+            end
+        end
+            
+%         
+%         if cell_flag_hit(x,y) == 1 && cmd_mode(WHEELCOUNTER) == 2 && WHEELCOUNTER > 50
+%         Occupy_cells(x+15,y+5,(THETA(end-50)*180/pi)-90);
 %         end
-%             
-% %         
-% %         if cell_flag_hit(x,y) == 1 && cmd_mode(WHEELCOUNTER) == 2 && WHEELCOUNTER > 50
-% %         Occupy_cells(x+15,y+5,(THETA(end-50)*180/pi)-90);
-% %         end
-%     elseif Loop_Front_center(WHEELCOUNTER-1) > 0
-%         if cell_flag_clear(x,y) == 1 && cmd_mode(WHEELCOUNTER) == 2 && WHEELCOUNTER > 50            
-%             Clear_cells(x+20,y+15,(THETA(end)*180/pi)-90);
-%         end
-%     end
+    elseif Loop_Front_center(WHEELCOUNTER-1) > 0
+        if cell_flag_clear(x,y) == 1 && cmd_mode(WHEELCOUNTER) == 2 && WHEELCOUNTER > 50            
+            Clear_cells(x+15,y+5,(THETA(end)*180/pi)-90);
+        end
+    end
         X = [X, x];
         Y = [Y, y];
-%         X2 = [X2, x];
-%         Y2 = [Y2, y];
         THETA = [THETA, theta];
-        if GPS_ready
-         GPS_theta = [GPS_theta, gps_theta];
-        else
-            GPS_theta = [GPS_theta, NaN];
-        end
-         Theta_odom = [Theta_odom, theta_odom];
 
 
 end% show(map)
